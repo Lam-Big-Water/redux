@@ -1,10 +1,9 @@
-import Counter from "./features/counter/Counter";
-
+import PostsList from "./features/posts/PostsList"
 const App = () => {
   return (
     <div>
-      <h1>Counter</h1>
-      <Counter />
+      <h1>Blog</h1>
+      <PostsList />
     </div>
   )
 }
