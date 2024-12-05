@@ -1,10 +1,14 @@
-import Counter from "./features/counter/Counter"
-const App = () => {
+import PostsList from "./features/posts/PostsList";
+import AddPostForm from "./features/posts/AddPostForm";
+
+function App() {
   return (
-    <div>
-      <Counter />
-    </div>
-  )
+    <main className="App">
+      <h1>Blog</h1>
+      <PostsList />
+      <AddPostForm />
+    </main>
+  );
 }
 
-export default App
+export default App;
