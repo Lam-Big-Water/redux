@@ -14,10 +14,15 @@ const initialState = {
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
     try {
         const response = await axios.get(POSTS_URL)
-        return [...response.data];
+        return response.data;
     } catch (err) {
         return err.message;
     }
+})
+
+export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPost) => {
+    const response = await axios.post(POSTS_URL, initialPost);
+    return response.data
 })
 
 const postsSlice = createSlice({
@@ -64,7 +69,7 @@ const postsSlice = createSlice({
 
     extraReducers(builder) {
         builder
-            .addCase(fetchPosts.pending, (state, action) => {
+            .addCase(fetchPosts.pending, (state) => {
                 state.status = 'loading'
             })
             .addCase(fetchPosts.fulfilled, (state, action) => {
@@ -75,19 +80,38 @@ const postsSlice = createSlice({
                     post.date = sub(new Date(), {minutes: min++}).toISOString()
                     post.reactions = {
                         thumbsUp: 0,
-                        hooray: 0,
+                        wow: 0,
                         heart: 0,
                         rocket: 0,
-                        eyes: 0
+                        coffee: 0
                     }
                     return post
                 })
                 // Add any fetched posts to the array
-                state.posts = state.posts.concat(loadedPosts)
+                state.posts = loadedPosts
             })
             .addCase(fetchPosts.rejected, (state, action) => {
                 state.status = 'failed'
                 state.error = action.error.message
+            })
+            .addCase(addNewPost.fulfilled, (state, action) => {
+                const sortedPosts = state.posts.sort((a, b) => {
+                    if (a.id > b.id) return 1
+                    if (a.id < b.id) return -1
+                    return 0
+                })
+                action.payload.id = sortedPosts[sortedPosts.length - 1].id + 1;
+
+                action.payload.userId = Number(action.payload.userId);
+                action.payload.date = new Date().toISOString();
+                action.payload.reactions = {
+                    thumbsUp: 0,
+                    wow: 0,
+                    heart: 0,
+                    rocket: 0,
+                    coffee: 0
+                }
+                state.posts.push(action.payload);
             })
     }
 
